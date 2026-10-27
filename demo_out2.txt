@@ -1,0 +1,105 @@
+=== GossipMesh demo: bringing up 5-node cluster ===
+started A (pid=117) -> /home/claude/gossipmesh/logs/A.log
+started B (pid=118) -> /home/claude/gossipmesh/logs/B.log
+started C (pid=119) -> /home/claude/gossipmesh/logs/C.log
+started D (pid=120) -> /home/claude/gossipmesh/logs/D.log
+started E (pid=121) -> /home/claude/gossipmesh/logs/E.log
+
+letting the cluster settle for 6s...
+
+--- A (last 2 lines) ---
+[A] view=[B:ALIVE, C:ALIVE, D:ALIVE, E:ALIVE]  interval=0.50s fanout=4 churn=0.50/s
+[A] view=[B:ALIVE, C:ALIVE, D:ALIVE, E:ALIVE]  interval=0.50s fanout=4 churn=0.50/s
+
+--- B (last 2 lines) ---
+[B] view=[A:ALIVE, C:ALIVE, D:ALIVE, E:ALIVE]  interval=0.50s fanout=4 churn=0.50/s
+[B] view=[A:ALIVE, C:ALIVE, D:ALIVE, E:ALIVE]  interval=0.50s fanout=4 churn=0.50/s
+
+--- C (last 2 lines) ---
+[C] view=[A:ALIVE, B:ALIVE, D:ALIVE, E:ALIVE]  interval=0.50s fanout=4 churn=0.50/s
+[C] view=[A:ALIVE, B:ALIVE, D:ALIVE, E:ALIVE]  interval=0.50s fanout=4 churn=0.50/s
+
+--- D (last 2 lines) ---
+[D] view=[A:ALIVE, B:ALIVE, C:ALIVE, E:ALIVE]  interval=0.50s fanout=4 churn=0.50/s
+[D] view=[A:ALIVE, B:ALIVE, C:ALIVE, E:ALIVE]  interval=0.50s fanout=4 churn=0.50/s
+
+--- E (last 2 lines) ---
+[E] view=[A:ALIVE, B:ALIVE, C:ALIVE, D:ALIVE]  interval=0.50s fanout=4 churn=0.50/s
+[E] view=[A:ALIVE, B:ALIVE, C:ALIVE, D:ALIVE]  interval=0.50s fanout=4 churn=0.50/s
+
+
+=== Simulating a crash: killing node D ===
+
+killed D (pid=120)
+
+--- state after crash (watch churn_rate / interval / fanout react) ---
+--- A (last 6 lines) ---
+[A] view=[B:ALIVE, C:ALIVE, D:ALIVE, E:ALIVE]  interval=0.50s fanout=4 churn=0.50/s
+[A] view=[B:ALIVE, C:ALIVE, D:ALIVE, E:ALIVE]  interval=0.50s fanout=4 churn=0.50/s
+[A] view=[B:ALIVE, C:ALIVE, D:ALIVE, E:ALIVE]  interval=0.75s fanout=2 churn=0.00/s
+[A] D -> SUSPECT (incarnation 1792949168)
+[A] D -> DEAD (incarnation 1792949168)
+[A] view=[B:ALIVE, C:ALIVE, D:DEAD, E:ALIVE]  interval=1.50s fanout=1 churn=0.25/s
+
+--- B (last 6 lines) ---
+[B] view=[A:ALIVE, C:ALIVE, D:ALIVE, E:ALIVE]  interval=0.50s fanout=4 churn=0.50/s
+[B] view=[A:ALIVE, C:ALIVE, D:ALIVE, E:ALIVE]  interval=0.50s fanout=4 churn=0.50/s
+[B] view=[A:ALIVE, C:ALIVE, D:ALIVE, E:ALIVE]  interval=1.50s fanout=1 churn=0.00/s
+[B] D unreachable (direct+indirect failed) -> SUSPECT [churn_rate=0.00/s interval=1.50s fanout=1]
+[B] D -> DEAD (suspicion timeout expired)
+[B] view=[A:ALIVE, C:ALIVE, D:DEAD, E:ALIVE]  interval=0.75s fanout=2 churn=0.25/s
+
+--- C (last 6 lines) ---
+[C] view=[A:ALIVE, B:ALIVE, D:ALIVE, E:ALIVE]  interval=0.50s fanout=4 churn=0.50/s
+[C] view=[A:ALIVE, B:ALIVE, D:ALIVE, E:ALIVE]  interval=0.50s fanout=4 churn=0.50/s
+[C] view=[A:ALIVE, B:ALIVE, D:ALIVE, E:ALIVE]  interval=1.50s fanout=1 churn=0.00/s
+[C] D unreachable (direct+indirect failed) -> SUSPECT [churn_rate=0.00/s interval=1.50s fanout=1]
+[C] D -> DEAD (incarnation 1792949168)
+[C] view=[A:ALIVE, B:ALIVE, D:DEAD, E:ALIVE]  interval=1.50s fanout=1 churn=0.25/s
+
+--- E (last 6 lines) ---
+[E] view=[A:ALIVE, B:ALIVE, C:ALIVE, D:ALIVE]  interval=0.50s fanout=4 churn=0.50/s
+[E] view=[A:ALIVE, B:ALIVE, C:ALIVE, D:ALIVE]  interval=0.50s fanout=4 churn=0.50/s
+[E] view=[A:ALIVE, B:ALIVE, C:ALIVE, D:ALIVE]  interval=1.50s fanout=1 churn=0.00/s
+[E] D -> SUSPECT (incarnation 1792949168)
+[E] D -> DEAD (suspicion timeout expired)
+[E] view=[A:ALIVE, B:ALIVE, C:ALIVE, D:DEAD]  interval=1.00s fanout=1 churn=0.25/s
+
+
+=== Self-healing rejoin: restarting node D ===
+
+started D (pid=122) -> /home/claude/gossipmesh/logs/D.log
+
+--- state after rejoin (D should be ALIVE again everywhere) ---
+--- A (last 4 lines) ---
+[A] D -> ALIVE (incarnation 1792949180)
+[A] D JOINED at 127.0.0.1:9004 (incarnation 1792949180)
+[A] view=[B:ALIVE, C:ALIVE, D:ALIVE, E:ALIVE]  interval=0.50s fanout=4 churn=0.50/s
+[A] view=[B:ALIVE, C:ALIVE, D:ALIVE, E:ALIVE]  interval=0.50s fanout=4 churn=0.50/s
+
+--- B (last 4 lines) ---
+[B] D -> DEAD (suspicion timeout expired)
+[B] view=[A:ALIVE, C:ALIVE, D:DEAD, E:ALIVE]  interval=0.75s fanout=2 churn=0.25/s
+[B] D -> ALIVE (incarnation 1792949180)
+[B] view=[A:ALIVE, C:ALIVE, D:ALIVE, E:ALIVE]  interval=0.60s fanout=3 churn=0.38/s
+
+--- C (last 4 lines) ---
+[C] D -> DEAD (incarnation 1792949168)
+[C] view=[A:ALIVE, B:ALIVE, D:DEAD, E:ALIVE]  interval=1.50s fanout=1 churn=0.25/s
+[C] D -> ALIVE (incarnation 1792949180)
+[C] view=[A:ALIVE, B:ALIVE, D:ALIVE, E:ALIVE]  interval=0.60s fanout=3 churn=0.38/s
+
+--- D (last 4 lines) ---
+[D] learned about new member E (127.0.0.1:9005)
+[D] learned about new member A (127.0.0.1:9001)
+[D] joined cluster via ('127.0.0.1', 9001), 4 known peers
+[D] view=[A:ALIVE, B:ALIVE, C:ALIVE, E:ALIVE]  interval=0.50s fanout=4 churn=0.50/s
+
+--- E (last 4 lines) ---
+[E] D -> DEAD (suspicion timeout expired)
+[E] view=[A:ALIVE, B:ALIVE, C:ALIVE, D:DEAD]  interval=1.00s fanout=1 churn=0.25/s
+[E] D -> ALIVE (incarnation 1792949180)
+[E] view=[A:ALIVE, B:ALIVE, C:ALIVE, D:ALIVE]  interval=0.60s fanout=3 churn=0.38/s
+
+
+=== Demo complete. Ctrl+C to stop, or leave running and inspect logs/*.log ===

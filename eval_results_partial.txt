@@ -1,0 +1,29 @@
+trial 1/6: 4.42
+trial 2/6: 7.54
+trial 3/6: 7.44
+trial 4/6: 5.22
+trial 5/6: 8.65
+trial 6/6: 6.37
+RESULT mode=adaptive scenario=single mean=6.61s sd=1.58 min=4.42 max=8.65 n=6
+trial 1/6: 5.43
+trial 2/6: 4.32
+trial 3/6: 7.74
+trial 4/6: 8.05
+trial 5/6: 6.33
+trial 6/6: 6.43
+RESULT mode=fixed scenario=single mean=6.38s sd=1.40 min=4.32 max=8.05 n=6
+trial 1/6: 8.44
+trial 2/6: 6.53
+trial 3/6: 7.43
+trial 4/6: 6.03
+trial 5/6: 7.83
+trial 6/6: 7.93
+RESULT mode=adaptive scenario=double mean=7.36s sd=0.91 min=6.03 max=8.44 n=6
+trial 1/6: 9.04
+trial 2/6: 9.56
+trial 3/6: 9.34
+trial 4/6: 11.86
+trial 5/6: 7.84
+trial 6/6: 6.02
+RESULT mode=fixed scenario=double mean=8.94s sd=1.94 min=6.02 max=11.86 n=6
+ALLDONE
